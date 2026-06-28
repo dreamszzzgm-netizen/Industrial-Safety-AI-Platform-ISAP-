@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сведения, характеризующие ОПО (финальная версия)</title>
+    <style>
+        /* ===== Стили формы (без изменений) ===== */
+        * { box-sizing: border-box; }
+        body { font-family: 'Times New Roman', Times, serif; background: #f2f2f2; margin: 20px; padding: 0; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; padding: 25px 30px; box-shadow: 0 0 20px rgba(0,0,0,0.1); border-radius: 8px; }
+        h1 { text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 25px; text-transform: uppercase; }
+        .section { margin-bottom: 25px; border: 1px solid #ccc; padding: 15px 20px; border-radius: 5px; background: #fafafa; }
+        .section-title { font-weight: bold; font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid #999; padding-bottom: 5px; }
+        .row { display: flex; flex-wrap: wrap; margin-bottom: 10px; align-items: baseline; }
+        .label { font-weight: bold; min-width: 200px; padding-right: 15px; flex: 0 0 auto; }
+        .value { flex: 1; }
+        .value input[type="text"], .value input[type="date"], .value input[type="number"], .value textarea, .value select { width: 100%; padding: 6px 10px; border: 1px solid #aaa; border-radius: 4px; font-family: inherit; font-size: 15px; background: white; }
+        .value textarea { resize: vertical; min-height: 40px; }
+        .inline-group { display: flex; flex-wrap: wrap; gap: 15px 30px; margin: 5px 0; }
+        .inline-group label { display: flex; align-items: center; gap: 5px; font-weight: normal; cursor: pointer; }
+        .inline-group input[type="checkbox"], .inline-group input[type="radio"] { width: 18px; height: 18px; cursor: pointer; }
+        .sub-points { padding-left: 30px; margin-top: 5px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+        table th, table td { border: 1px solid #444; padding: 5px 6px; vertical-align: middle; text-align: left; }
+        table th { background: #e9ecef; font-weight: bold; text-align: center; font-size: 12px; line-height: 1.3; }
+        .table-wrap { overflow-x: auto; }
+        .btn-add { background: #007bff; color: white; border: none; padding: 6px 18px; border-radius: 4px; font-size: 14px; cursor: pointer; margin: 10px 0 5px; }
+        .btn-add:hover { background: #0056b3; }
+        .btn-remove { background: #dc3545; color: white; border: none; padding: 2px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+        .btn-remove:hover { background: #b02a37; }
+        .signature-block { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 20px; }
+        .signature-left { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 30px; }
+        .signature-left .field { display: flex; align-items: center; gap: 8px; }
+        .signature-left .field input { width: 140px; border: none; border-bottom: 1px solid #000; background: transparent; font-family: inherit; font-size: 15px; padding: 2px 4px; }
+        .signature-left .field input.large { width: 240px; }
+        .signature-right { display: flex; align-items: center; gap: 8px; }
+        .signature-right input { width: 120px; border: none; border-bottom: 1px solid #000; background: transparent; font-family: inherit; font-size: 15px; padding: 2px 4px; }
+        .footer-note { margin-top: 15px; font-style: italic; text-align: center; }
+        .btn-save { background: #28a745; color: white; border: none; padding: 10px 30px; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 20px; display: inline-block; }
+        .btn-export { background: #17a2b8; color: white; border: none; padding: 10px 30px; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 20px; margin-left: 15px; display: inline-block; }
+        .btn-export:hover { background: #138496; }
+        .btn-save:hover { background: #1e7e34; }
+        .action-bar { text-align: center; margin-top: 10px; }
+        @media (max-width: 700px) {
+            .row { flex-direction: column; align-items: stretch; }
+            .label { min-width: auto; margin-bottom: 3px; }
+            .signature-block { flex-direction: column; align-items: stretch; }
+            .signature-left { flex-direction: column; align-items: stretch; }
+            .signature-left .field { flex-wrap: wrap; }
+            .signature-right { margin-top: 10px; }
+            .action-bar { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+            .btn-export { margin-left: 0; }
+        }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 2px 6px; align-items: center; }
+        .checkbox-group label { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; cursor: pointer; white-space: nowrap; margin: 0; }
+        .checkbox-group input[type="checkbox"] { width: 14px; height: 14px; margin: 0; cursor: pointer; }
+        .danger-amount-input { width: 70px !important; text-align: center; margin-top: 2px; }
+        .total-amount-input { font-weight: bold; background: #f0f8ff; }
+        .cell-with-amount { display: flex; flex-direction: column; gap: 3px; }
+        .cell-with-amount input[type="text"] { width: 100%; }
+        .amount-label { font-size: 12px; display: flex; align-items: center; gap: 6px; }
+        .amount-label input { width: 70px; }
+        .num-cell { text-align: center; font-weight: bold; }
+        .num-cell input { width: 40px; text-align: center; border: none; background: transparent; font-weight: bold; font-size: 13px; }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <h1>Сведения, характеризующие опасный производственный объект</h1>
+
+    <!-- ===== РАЗДЕЛ 1 ===== -->
+    <div class="section">
+        <div class="section-title">1. ОПО</div>
+        <div class="row"><span class="label">1.1. Полное наименование ОПО</span><div class="value"><input type="text" id="f1_1" placeholder="Введите полное наименование"></div></div>
+        <div class="row"><span class="label">1.2. Типовое наименование (именной код объекта)</span><div class="value"><input type="text" id="f1_2" placeholder="Например: ГРП-1, Газопровод-ввод"></div></div>
+        <div class="row"><span class="label">1.3. Цифровое обозначение раздела (подраздела) отраслевой принадлежности</span><div class="value"><input type="text" id="f1_3" placeholder="Код по приложению №1 к Правилам регистрации"></div></div>
+        <div class="row"><span class="label">1.4. Место нахождения (адрес) ОПО</span><div class="value"><input type="text" id="f1_4" placeholder="Полный адрес"></div></div>
+        <div class="row"><span class="label">1.5. Код ОКТМО</span><div class="value"><input type="text" id="f1_5" placeholder="Код ОКТМО"></div></div>
+        <div class="row"><span class="label">1.6. Дата ввода объекта в эксплуатацию</span><div class="value"><input type="date" id="f1_6"></div></div>
+        <div class="row" style="font-weight:bold; margin-top:10px;"><span>1.7. Собственник(и) ОПО (если заявитель владеет на ином законном основании)</span></div>
+        <div class="row" style="padding-left:20px;"><span class="label">1.7.1. Полное наименование юр.лица / ФИО ИП или физ.лица</span><div class="value"><input type="text" id="f1_7_1" placeholder="Наименование"></div></div>
+        <div class="row" style="padding-left:20px;"><span class="label">1.7.2. ИНН</span><div class="value"><input type="text" id="f1_7_2" placeholder="ИНН собственника"></div></div>
+    </div>
+
+    <!-- ===== РАЗДЕЛ 2 ===== -->
+    <div class="section">
+        <div class="section-title">2. Процессы (работы), которые осуществляются (выполняются) на ОПО<br><span style="font-size:14px; font-weight:normal;">(указанные в приложении 1 к Федеральному закону № 116-ФЗ)</span></div>
+        <div class="row"><span style="flex:1;">2.1. Получение, использование, переработка, образование, хранение, транспортирование, уничтожение опасных веществ, предусмотренных пунктом 1 приложения 1 к 116-ФЗ в количествах, указанных в приложении 2</span><div style="margin-left:15px;"><input type="checkbox" id="p2_1" checked> <span style="font-weight:bold;">V</span></div></div>
+        <div style="font-weight:bold; margin:10px 0 5px;">2.2. Использование оборудования, работающего под избыточным давлением более 0,07 МПа</div>
+        <div class="row" style="padding-left:20px;"><span style="flex:1;">а) пара, газа (в газообразном, сжиженном состоянии)</span><div><input type="checkbox" id="p2_2a"></div></div>
+        <div class="row" style="padding-left:20px;"><span style="flex:1;">б) воды при температуре нагрева более 115 °C</span><div><input type="checkbox" id="p2_2b"></div></div>
+        <div class="row" style="padding-left:20px;"><span style="flex:1;">в) иных жидкостей при температуре, превышающей температуру кипения при избыточном давлении 0,07 МПа</span><div><input type="checkbox" id="p2_2c"></div></div>
+        <div class="row"><span style="flex:1;">2.3. Использование стационарно установленных грузоподъемных механизмов (за исключением лифтов, платформ для инвалидов, эскалаторов, канатных дорог, фуникулеров)</span><div><input type="checkbox" id="p2_3"></div></div>
+        <div class="row"><span style="flex:1;">2.4. Получение, транспортирование, использование расплавов черных и цветных металлов, сплавов на их основе с применением оборудования, рассчитанного на максимальное количество расплава 500 кг и более</span><div><input type="checkbox" id="p2_4"></div></div>
+        <div class="row"><span style="flex:1;">2.5. Ведение горных работ (за исключением добычи общераспространенных полезных ископаемых и разработки россыпных месторождений открытым способом без взрывных работ), работ по обогащению полезных ископаемых</span><div><input type="checkbox" id="p2_5"></div></div>
+        <div class="row"><span style="flex:1;">2.6. Осуществление хранения или переработки растительного сырья, в процессе которых образуются взрывоопасные пылевоздушные смеси, способные самовозгораться, возгораться от источника зажигания и самостоятельно гореть после его удаления, а также хранение зерна, продуктов его переработки и комбикормового сырья, склонных к самосогреванию и самовозгоранию</span><div><input type="checkbox" id="p2_6"></div></div>
+    </div>
+
+    <!-- ===== РАЗДЕЛ 3 ===== -->
+    <div class="section">
+        <div class="section-title">3. Класс опасности ОПО и его числовое обозначение</div>
+        <div class="inline-group" id="classGroup">
+            <label><input type="radio" name="class" value="I"> 3.1. ОПО чрезвычайно высокой опасности (I класс)</label>
+            <label><input type="radio" name="class" value="II"> 3.2. ОПО высокой опасности (II класс)</label>
+            <label><input type="radio" name="class" value="III" checked> 3.3. ОПО средней опасности (III класс) <span style="font-weight:bold;">V</span></label>
+            <label><input type="radio" name="class" value="IV"> 3.4. ОПО низкой опасности (IV класс)</label>
+        </div>
+    </div>
+
+    <!-- ===== РАЗДЕЛ 4 ===== -->
+    <div class="section">
+        <div class="section-title">4. Классификация ОПО</div>
+        <div class="checklist" id="classifList">
+            <label><input type="checkbox" value="4.1"> 4.1. ОПО, указанные в пункте 1 приложения 2 к 116-ФЗ</label>
+            <label><input type="checkbox" value="4.2"> 4.2. ОПО по хранению химического оружия, объектов по уничтожению химического оружия и ОПО спецхимии, указанные в пункте 2 приложения 2</label>
+            <label><input type="checkbox" value="4.3"> 4.3. ОПО бурения и добычи нефти, газа и газового конденсата, указанные в пункте 3 приложения 2</label>
+            <label><input type="checkbox" value="4.4" checked> 4.4. ОПО газораспределительных станций, сетей газораспределения и сетей газопотребления, предусмотренные пунктом 4 приложения 2 <span style="font-weight:bold;">V</span></label>
+            <label><input type="checkbox" value="4.5"> 4.5. ОПО, предусмотренные пунктом 5 приложения 2</label>
+            <label><input type="checkbox" value="4.6"> 4.6. ОПО, предусмотренные пунктом 6 приложения 2</label>
+            <label><input type="checkbox" value="4.7"> 4.7. ОПО, предусмотренные пунктом 7 приложения 2</label>
+            <label><input type="checkbox" value="4.8"> 4.8. ОПО, предусмотренные пунктом 8 приложения 2</label>
+            <label><input type="checkbox" value="4.9"> 4.9. ОПО, предусмотренные пунктом 9 приложения 2</label>
+            <label><input type="checkbox" value="4.10"> 4.10. Наличие факторов, предусмотренных пунктом 10 приложения 2</label>
+            <label><input type="checkbox" value="4.11"> 4.11. Наличие факторов, предусмотренных пунктом 11 приложения 2</label>
+        </div>
+        <div class="sub-points" style="margin-top:8px;">
+            <div class="inline-group">
+                <label><input type="checkbox" value="земли ООПТ"> на землях особо охраняемых природных территорий</label>
+                <label><input type="checkbox" value="континентальный шельф"> на континентальном шельфе РФ</label>
+                <label><input type="checkbox" value="внутренние морские воды"> во внутренних морских водах, территориальном море или прилежащей зоне РФ</label>
+                <label><input type="checkbox" value="искусственный участок"> на искусственном земельном участке, созданном на водном объекте, находящемся в федеральной собственности</label>
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px;"><span style="flex:1;">4.12. ОПО, аварии на котором могут иметь трансграничное воздействие</span><div><input type="checkbox" id="f4_12"></div></div>
+    </div>
+
+    <!-- ===== РАЗДЕЛ 5 ===== -->
+    <div class="section">
+        <div class="section-title">5. Виды деятельности, на осуществление которых требуется получение лицензии для эксплуатации ОПО</div>
+        <div class="checklist" id="licenseList">
+            <label><input type="checkbox" value="5.1" checked> 5.1. Эксплуатация взрывопожароопасных и химически опасных производственных объектов I, II и III классов опасности <span style="font-weight:bold;">V</span></label>
+            <label><input type="checkbox" value="5.2"> 5.2. Деятельность, связанная с обращением взрывчатых материалов промышленного назначения</label>
+            <label><input type="checkbox" value="5.3"> 5.3. Деятельность, связанная с производством маркшейдерских работ</label>
+        </div>
+    </div>
+
+    <!-- ===== РАЗДЕЛ 6 (ТАБЛИЦА) ===== -->
+    <div class="section">
+        <div class="section-title">6. Сведения о составе ОПО</div>
+        <div class="table-wrap">
+            <table id="compositionTable">
+                <thead>
+                    <tr>
+                        <th style="width:4%;">№ п/п</th>
+                        <th style="width:14%;">Наиме­нование предприятия или его цеха, площадки, участка, иного производственного объекта, здания, сооружения, входящих в состав ОПО</th>
+                        <th style="width:16%;">Краткая характе­ристика опасности <br>в соответ­ствии с приложением 1 <br>к Федераль­ному закону № 116-ФЗ<br><span style="font-weight:normal; font-size:11px;">(отметьте нужные)</span></th>
+                        <th style="width:16%;">Наиме­нование опасного вещества; наиме­нование, тип, марка, модель (при наличии), регистра-ционные или учетные номера (при наличии) для самоходных подъемных сооружений и оборудо­вания, работающего под давлением в передвижных и транспортабельных установках, подлежащего учету в регистри­рующем органе, заводские номера и (или) инвен­тарные номера (при наличии) техни­ческих устройств</th>
+                        <th style="width:20%;">Проектные (эксплуата­ционные) характе-ристики техни­ческих устройств (объем, температура, давление в МПа, грузо-подъём­ность в тоннах), опасного вещества (вид в соответствии с таблицами 1 и 2 приложения 2 к Федеральному закону № 116-ФЗ, характе­ристика, количество опасного вещества, выраженное в тоннах, регламен­тирован­ного объемом резервуаров, емкостей и параметрами трубопро­водов (диаметр, протяженность, проектное давление) или иного оборудо­вания, процентное содержа­ние сероводорода в добываемой продукции, объем выплавки и объем горных работ). <br>Год изготов­ления и ввода в эксплуа­тацию технических устройств, зданий (сооружений) (при наличии таких сведений)</th>
+                        <th style="width:10%;">Числовое обозна­чение процессов (работ), которые осуществляются (выполняются) на ОПО<br>(2.1, 2.2, 2.3, 2.4, 2.5, 2.6)<br><span style="font-weight:normal; font-size:11px;">(отметьте нужные)</span></th>
+                        <th style="width:4%;">Действие</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- строки генерируются скриптом -->
+                </tbody>
+            </table>
+        </div>
+        <button class="btn-add" onclick="addTableRow()">+ Добавить строку</button>
+        <div class="row" style="margin-top:15px;">
+            <span style="flex:1; font-weight:bold;">Суммарное количество опасного вещества по видам (в тоннах) на ОПО в соответствии с таблицами 1 и 2 приложения 2 к 116-ФЗ</span>
+            <div style="min-width:150px;"><input type="text" id="totalAmount" readonly class="total-amount-input" value="0" style="width:100%; background:#f0f8ff; font-weight:bold;"></div>
+        </div>
+    </div>
+
+    <!-- ===== РАЗДЕЛ 7 ===== -->
+    <div class="section">
+        <div class="section-title">7. Количество опасных веществ на ОПО (в тоннах), находящихся на расстоянии менее 500 метров на других ОПО заявителя или иной организации по видам в соответствии с таблицами 1 и 2 приложения 2 к 116-ФЗ (при наличии)</div>
+        <div class="row"><div class="value"><textarea id="f7" rows="2" placeholder="Укажите количество и виды опасных веществ на других ОПО в радиусе 500 м"></textarea></div></div>
+    </div>
+
+    <!-- ===== РАЗДЕЛ 8 ===== -->
+    <div class="section">
+        <div class="section-title">8. Заявитель</div>
+        <div style="font-weight:bold;">8.1 Юридическое лицо</div>
+        <div class="row"><span class="label">8.1.1 Полное наименование</span><div class="value"><input type="text" id="f8_1_1"></div></div>
+        <div class="row"><span class="label">8.1.2 Сокращенное наименование (при наличии)</span><div class="value"><input type="text" id="f8_1_2"></div></div>
+        <div class="row"><span class="label">8.1.3 ИНН</span><div class="value"><input type="text" id="f8_1_3"></div></div>
+        <div class="row"><span class="label">8.1.4 ОГРН</span><div class="value"><input type="text" id="f8_1_4"></div></div>
+        <div class="row"><span class="label">8.1.5 Должность руководителя</span><div class="value"><input type="text" id="f8_1_5"></div></div>
+        <div class="row"><span class="label">8.1.6 Фамилия, имя, отчество руководителя</span><div class="value"><input type="text" id="f8_1_6"></div></div>
+        <div class="row"><span class="label">8.1.7 Адрес места нахождения (с указанием административно-территориальной единицы, населенного пункта, улицы, номера дома, почтового индекса)</span><div class="value"><input type="text" id="f8_1_7"></div></div>
+        <div class="row"><span class="label">8.1.8 Подпись руководителя</span><div class="value"><input type="text" id="f8_1_8" placeholder="(подпись)"></div></div>
+        <div class="row"><span class="label">8.1.9 Дата подписания</span><div class="value"><input type="date" id="f8_1_9"></div></div>
+        <div class="row"><span class="label">Место печати (при наличии)</span><div class="value"><input type="text" id="f8_1_10" placeholder="М.П."></div></div>
+    </div>
+
+    <!-- ===== РАЗДЕЛ 9 ===== -->
+    <div class="section">
+        <div class="section-title">9. Реквизиты ОПО и территориального органа Ростехнадзора</div>
+        <div class="row"><span class="label">9.1. Регистрационный номер</span><div class="value"><input type="text" id="f9_1"></div></div>
+        <div class="row"><span class="label">9.2. Временный номер (системный)</span><div class="value"><input type="text" id="f9_2"></div></div>
+        <div class="row"><span class="label">9.3. Дата регистрации</span><div class="value"><input type="date" id="f9_3"></div></div>
+        <div class="row"><span class="label">9.4. Дата внесения изменений</span><div class="value"><input type="date" id="f9_4"></div></div>
+        <div class="row"><span class="label">9.5. Полное наименование регистрирующего органа</span><div class="value"><input type="text" id="f9_5"></div></div>
+        <div class="row"><span class="label">9.6. Должность уполномоченного лица</span><div class="value"><input type="text" id="f9_6"></div></div>
+        <div class="row"><span class="label">9.7. ФИО уполномоченного лица</span><div class="value"><input type="text" id="f9_7"></div></div>
+        <div class="row"><span class="label">9.8. Подпись уполномоченного лица</span><div class="value"><input type="text" id="f9_8" placeholder="(подпись)"></div></div>
+        <div class="row"><span class="label">9.10. Дата подписания уполномоченным лицом</span><div class="value"><input type="date" id="f9_10"></div></div>
+        <div class="row"><span class="label">Место печати (при наличии)</span><div class="value"><input type="text" id="f9_11" placeholder="М.П."></div></div>
+    </div>
+
+    <!-- Подпись внизу документа -->
+    <div style="margin-top:15px; font-style:italic; text-align:right;">Сведения, характеризующие ОПО, достоверны.</div>
+
+    <div class="signature-block">
+        <div class="signature-left">
+            <div class="field"><span>Должность, ФИО</span><input type="text" id="sign_dolj" class="large" placeholder="должность, фамилия, имя, отчество"></div>
+            <div class="field"><span>Подпись</span><input type="text" id="sign_podp" placeholder="(подпись)"></div>
+            <div class="field"><span>Дата</span><input type="text" id="sign_date" placeholder="« __ » _______ 20__ г." style="width:180px;"></div>
+        </div>
+        <div class="signature-right"><span>М.П. (при наличии)</span><input type="text" id="sign_mp" placeholder="Место печати" style="width:120px;"></div>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn-save" onclick="saveForm()">💾 Сохранить данные</button>
+        <button class="btn-export" onclick="exportWord()">📄 Экспорт в Word (старый)</button>
+        <button class="btn-export" style="background:#6f42c1;" onclick="exportServer('docx')">📄 Скачать DOCX</button>
+        <button class="btn-export" style="background:#e83e8c;" onclick="exportServer('pdf')">📕 Скачать PDF</button>
+    </div>
+    <div class="footer-note">* Отметьте нужные пункты в чекбоксах. Количество опасного вещества суммируется автоматически.</div>
+</div>
+
+<script>
+    // ================== ОПРЕДЕЛЕНИЯ ДЛЯ ТАБЛИЦЫ ==================
+    const dangerItems = [
+        { id: 'd1', label: '1. Получение (образование)' },
+        { id: 'd2', label: '2. Использование' },
+        { id: 'd3', label: '3. Переработка' },
+        { id: 'd4', label: '4. Хранение' },
+        { id: 'd5', label: '5. Транспортирование' },
+        { id: 'd6', label: '6. Уничтожение' },
+        { id: 'd7', label: '7. Оборудование под давлением' },
+        { id: 'd8', label: '8. Расплавы металлов' },
+        { id: 'd9', label: '9. Горные работы' },
+        { id: 'd10', label: '10. Растительное сырьё, зерно' }
+    ];
+    const processItems = ['2.1', '2.2', '2.3', '2.4', '2.5', '2.6'];
+
+    function createCheckboxGroup(items, selectedValues = []) {
+        const container = document.createElement('div');
+        container.className = 'checkbox-group';
+        items.forEach(item => {
+            const label = document.createElement('label');
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.value = item.id || item;
+            if (selectedValues.includes(cb.value)) cb.checked = true;
+            label.appendChild(cb);
+            const text = document.createTextNode(item.label || item);
+            label.appendChild(text);
+            container.appendChild(label);
+        });
+        return container;
+    }
+
+    function createProjectCell(characteristicsText, amountValue) {
+        const container = document.createElement('div');
+        container.className = 'cell-with-amount';
+        const textInput = document.createElement('input');
+        textInput.type = 'text';
+        textInput.value = characteristicsText || '';
+        textInput.style.width = '100%';
+        textInput.className = 'proj-text';
+        container.appendChild(textInput);
+        const amountLine = document.createElement('div');
+        amountLine.className = 'amount-label';
+        amountLine.innerHTML = '<span style="font-weight:bold;">Количество, т:</span>';
+        const amountInput = document.createElement('input');
+        amountInput.type = 'number';
+        amountInput.step = 'any';
+        amountInput.min = '0';
+        amountInput.value = amountValue || '';
+        amountInput.className = 'danger-amount-input';
+        amountInput.addEventListener('input', updateTotalAmount);
+        amountLine.appendChild(amountInput);
+        container.appendChild(amountLine);
+        return container;
+    }
+
+    function createTableRow(num, name, dangerSelected, substance, characteristicsText, amount, processSelected) {
+        const tr = document.createElement('tr');
+        const tdNum = document.createElement('td');
+        tdNum.className = 'num-cell';
+        tdNum.innerHTML = `<input type="text" value="${num}" readonly>`;
+        tr.appendChild(tdNum);
+        const tdName = document.createElement('td');
+        tdName.innerHTML = `<input type="text" value="${name}" class="table-name" style="width:100%;">`;
+        tr.appendChild(tdName);
+        const tdDanger = document.createElement('td');
+        const dangerGroup = createCheckboxGroup(dangerItems, dangerSelected);
+        tdDanger.appendChild(dangerGroup);
+        tr.appendChild(tdDanger);
+        const tdSubstance = document.createElement('td');
+        tdSubstance.innerHTML = `<input type="text" value="${substance}" class="table-substance" style="width:100%;">`;
+        tr.appendChild(tdSubstance);
+        const tdChars = document.createElement('td');
+        const cellContent = createProjectCell(characteristicsText, amount);
+        tdChars.appendChild(cellContent);
+        tr.appendChild(tdChars);
+        const tdProcess = document.createElement('td');
+        const processGroup = createCheckboxGroup(processItems.map(p => ({ id: p, label: p })), processSelected);
+        tdProcess.appendChild(processGroup);
+        tr.appendChild(tdProcess);
+        const tdAction = document.createElement('td');
+        tdAction.style.textAlign = 'center';
+        const btnRemove = document.createElement('button');
+        btnRemove.className = 'btn-remove';
+        btnRemove.textContent = '✕';
+        btnRemove.onclick = function() { removeRow(this); };
+        tdAction.appendChild(btnRemove);
+        tr.appendChild(tdAction);
+        return tr;
+    }
+
+    function updateTotalAmount() {
+        const tbody = document.getElementById('tableBody');
+        const amountInputs = tbody.querySelectorAll('.danger-amount-input');
+        let total = 0;
+        amountInputs.forEach(input => {
+            const val = parseFloat(input.value);
+            if (!isNaN(val) && val > 0) total += val;
+        });
+        document.getElementById('totalAmount').value = total.toFixed(3);
+    }
+
+    function addTableRow() {
+        const tbody = document.getElementById('tableBody');
+        const rowCount = tbody.children.length + 1;
+        const newRow = createTableRow(rowCount + '.', '', [], '', '', '', []);
+        tbody.appendChild(newRow);
+        renumberRows();
+        updateTotalAmount();
+    }
+
+    function removeRow(btn) {
+        const tr = btn.closest('tr');
+        if (document.getElementById('tableBody').children.length <= 1) {
+            alert('Нельзя удалить последнюю строку.');
+            return;
+        }
+        if (confirm('Удалить эту строку?')) {
+            tr.remove();
+            renumberRows();
+            updateTotalAmount();
+        }
+    }
+
+    function renumberRows() {
+        const rows = document.getElementById('tableBody').querySelectorAll('tr');
+        rows.forEach((row, index) => {
+            const tdNum = row.querySelector('td:first-child input');
+            if (tdNum) tdNum.value = (index + 1) + '.';
+        });
+    }
+
+    function initTable() {
+        const tbody = document.getElementById('tableBody');
+        const row1 = createTableRow(
+            '1.',
+            'Площадка газорегуляторного пункта',
+            ['d2', 'd5'],
+            'РДНК-400М Зав № 77075 Природный газ по ГОСТ 5542‑87',
+            'Рвх. 0,6 МПа. Рвых. 0,005 МПа. Год изготовления - 2005 г. Ввод в эксплуатацию - 2005 г.',
+            '0',
+            ['2.1']
+        );
+        tbody.appendChild(row1);
+        const row2 = createTableRow(
+            '2.',
+            'Участок газопровода высокого давления вводной',
+            ['d5'],
+            'Труба стальная Природный газ по ГОСТ 5542‑87',
+            'Давление -- от 0,3 до 0,6 МПа; Ø -- 57 мм; L -- 8 м; Ø -- 89 мм; L -- 5,5 м. Год изготовления - 2005 г. Ввод в эксплуатацию - 2005 г.',
+            '0',
+            ['2.1']
+        );
+        tbody.appendChild(row2);
+        updateTotalAmount();
+    }
+
+    function saveForm() {
+        alert('Данные сохранены (имитация).');
+        console.log('Форма заполнена.');
+    }
+
+    // ================== ЭКСПОРТ В WORD (ПОЛНОЕ СООТВЕТСТВИЕ ШАБЛОНУ) ==================
+    function exportWord() {
+        // Вспомогательные функции получения данных
+        const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value : '';
+        const getCheck = (id) => document.getElementById(id) ? document.getElementById(id).checked : false;
+        const getRadioChecked = (name) => {
+            const els = document.querySelectorAll(`input[name="${name}"]`);
+            for (let el of els) if (el.checked) return el.value;
+            return '';
+        };
+        const getCheckboxValues = (containerId) => {
+            const container = document.getElementById(containerId);
+            if (!container) return [];
+            const checks = container.querySelectorAll('input[type="checkbox"]:checked');
+            return Array.from(checks).map(cb => cb.value);
+        };
+        const getCheckboxValuesInDiv = (divSelector) => {
+            const container = document.querySelector(divSelector);
+            if (!container) return [];
+            const checks = container.querySelectorAll('input[type="checkbox"]:checked');
+            return Array.from(checks).map(cb => cb.value);
+        };
+
+        // ----- Сбор данных -----
+        const f1 = {
+            fullName: getVal('f1_1'), typeName: getVal('f1_2'), code: getVal('f1_3'),
+            address: getVal('f1_4'), okTmo: getVal('f1_5'), dateIn: getVal('f1_6'),
+            ownerName: getVal('f1_7_1'), ownerInn: getVal('f1_7_2')
+        };
+        const p2 = {
+            p2_1: getCheck('p2_1'), p2_2a: getCheck('p2_2a'), p2_2b: getCheck('p2_2b'),
+            p2_2c: getCheck('p2_2c'), p2_3: getCheck('p2_3'), p2_4: getCheck('p2_4'),
+            p2_5: getCheck('p2_5'), p2_6: getCheck('p2_6')
+        };
+        const classVal = getRadioChecked('class');
+        const classifSelected = getCheckboxValues('classifList');
+        const subSelected = getCheckboxValuesInDiv('.sub-points .inline-group');
+        const transboundary = getCheck('f4_12');
+        const licenseSelected = getCheckboxValues('licenseList');
+
+        // Таблица
+        const tbody = document.getElementById('tableBody');
+        const rows = tbody.querySelectorAll('tr');
+        let tableData = [];
+        rows.forEach(row => {
+            const getInput = (selector) => {
+                const inp = row.querySelector(selector);
+                return inp ? inp.value : '';
+            };
+            const getCheckboxGroupSelected = (group) => {
+                const checks = group ? group.querySelectorAll('input[type="checkbox"]:checked') : [];
+                return Array.from(checks).map(cb => cb.value);
+            };
+            const name = getInput('.table-name');
+            const dangerGroup = row.querySelector('td:nth-child(3) .checkbox-group');
+            const dangerSelected = getCheckboxGroupSelected(dangerGroup);
+            const substance = getInput('.table-substance');
+            const projText = row.querySelector('.proj-text') ? row.querySelector('.proj-text').value : '';
+            const amountInput = row.querySelector('.danger-amount-input');
+            const amount = amountInput ? amountInput.value : '';
+            const processGroup = row.querySelector('td:nth-child(6) .checkbox-group');
+            const processSelected = getCheckboxGroupSelected(processGroup);
+            tableData.push({ name, dangerSelected, substance, projText, amount, processSelected });
+        });
+        const totalAmount = document.getElementById('totalAmount').value;
+
+        const f7 = getVal('f7');
+        const f8 = {
+            full: getVal('f8_1_1'), short: getVal('f8_1_2'), inn: getVal('f8_1_3'),
+            ogrn: getVal('f8_1_4'), post: getVal('f8_1_5'), fio: getVal('f8_1_6'),
+            address: getVal('f8_1_7'), sign: getVal('f8_1_8'), date: getVal('f8_1_9'), mp: getVal('f8_1_10')
+        };
+        const f9 = {
+            regNum: getVal('f9_1'), tempNum: getVal('f9_2'), dateReg: getVal('f9_3'),
+            dateChange: getVal('f9_4'), orgName: getVal('f9_5'), dolj: getVal('f9_6'),
+            fio: getVal('f9_7'), sign: getVal('f9_8'), date: getVal('f9_10'), mp: getVal('f9_11')
+        };
+        const signDolj = getVal('sign_dolj');
+        const signPodp = getVal('sign_podp');
+        const signDate = getVal('sign_date');
+        const signMp = getVal('sign_mp');
+
+        // ----- Формируем HTML для Word (полная структура) -----
+        let html = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+            <meta charset="utf-8">
+            <title>Сведения об ОПО</title>
+            <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
+            <style>
+                body { font-family: 'Times New Roman', Times, serif; font-size: 14pt; margin: 2.5cm 2cm; line-height: 1.5; }
+                h1 { text-align: center; font-size: 24pt; font-weight: bold; text-transform: uppercase; margin-bottom: 20pt; }
+                .section { margin-bottom: 16pt; }
+                .section-title { font-weight: bold; font-size: 18pt; border-bottom: 1px solid #000; padding-bottom: 4pt; margin-bottom: 12pt; }
+                .row { margin-bottom: 4pt; }
+                .label { font-weight: bold; display: inline-block; min-width: 220pt; vertical-align: top; }
+                .value { display: inline-block; vertical-align: top; }
+                table { width: 100%; border-collapse: collapse; font-size: 11pt; }
+                table th, table td { border: 1px solid #000; padding: 3pt 4pt; vertical-align: top; text-align: left; }
+                table th { background: #e9ecef; font-weight: bold; text-align: center; }
+                .signature-block { margin-top: 30pt; border-top: 1px solid #000; padding-top: 16pt; }
+                .signature-left { display: flex; flex-wrap: wrap; gap: 20pt; }
+                .field { display: inline-block; margin-right: 20pt; }
+                .field span { font-weight: bold; }
+                .field .value { border-bottom: 1px solid #000; padding: 0 5pt; min-width: 150pt; display: inline-block; }
+                .signature-right { margin-top: 10pt; }
+                .footer-note { font-style: italic; text-align: center; margin-top: 15pt; }
+                .bold { font-weight: bold; }
+                .mt-10 { margin-top: 10pt; }
+                .mb-5 { margin-bottom: 5pt; }
+                .indent { padding-left: 20pt; }
+    </style>
+</head>
+<body>
+    <h1>Сведения, характеризующие опасный производственный объект</h1>
+
+    <!-- РАЗДЕЛ 1 -->
+    <div class="section">
+        <div class="section-title">1. ОПО</div>
+        <div class="row"><span class="label">1.1. Полное наименование ОПО</span><span class="value">${f1.fullName}</span></div>
+        <div class="row"><span class="label">1.2. Типовое наименование (именной код объекта)</span><span class="value">${f1.typeName}</span></div>
+        <div class="row"><span class="label">1.3. Цифровое обозначение раздела (подраздела) отраслевой принадлежности</span><span class="value">${f1.code}</span></div>
+        <div class="row"><span class="label">1.4. Место нахождения (адрес) ОПО</span><span class="value">${f1.address}</span></div>
+        <div class="row"><span class="label">1.5. Код ОКТМО</span><span class="value">${f1.okTmo}</span></div>
+        <div class="row"><span class="label">1.6. Дата ввода объекта в эксплуатацию</span><span class="value">${f1.dateIn}</span></div>
+        <div class="row bold mt-10"><span>1.7. Собственник(и) ОПО (если заявитель владеет на ином законном основании)</span></div>
+        <div class="row indent"><span class="label">1.7.1. Полное наименование юр.лица / ФИО ИП или физ.лица</span><span class="value">${f1.ownerName}</span></div>
+        <div class="row indent"><span class="label">1.7.2. ИНН</span><span class="value">${f1.ownerInn}</span></div>
+    </div>
+
+    <!-- РАЗДЕЛ 2 -->
+    <div class="section">
+        <div class="section-title">2. Процессы (работы), которые осуществляются (выполняются) на ОПО<br><span style="font-size:14pt; font-weight:normal;">(указанные в приложении 1 к Федеральному закону № 116-ФЗ)</span></div>
+        <div class="row"><span style="flex:1;">2.1. Получение, использование, переработка, образование, хранение, транспортирование, уничтожение опасных веществ, предусмотренных пунктом 1 приложения 1 к 116-ФЗ в количествах, указанных в приложении 2</span> ${p2.p2_1 ? 'V' : ''}</div>
+        <div class="bold mt-10 mb-5">2.2. Использование оборудования, работающего под избыточным давлением более 0,07 МПа</div>
+        <div class="indent">а) пара, газа (в газообразном, сжиженном состоянии) ${p2.p2_2a ? 'V' : ''}</div>
+        <div class="indent">б) воды при температуре нагрева более 115 °C ${p2.p2_2b ? 'V' : ''}</div>
+        <div class="indent">в) иных жидкостей при температуре, превышающей температуру кипения при избыточном давлении 0,07 МПа ${p2.p2_2c ? 'V' : ''}</div>
+        <div class="row"><span style="flex:1;">2.3. Использование стационарно установленных грузоподъемных механизмов (за исключением лифтов, платформ для инвалидов, эскалаторов, канатных дорог, фуникулеров)</span> ${p2.p2_3 ? 'V' : ''}</div>
+        <div class="row"><span style="flex:1;">2.4. Получение, транспортирование, использование расплавов черных и цветных металлов, сплавов на их основе с применением оборудования, рассчитанного на максимальное количество расплава 500 кг и более</span> ${p2.p2_4 ? 'V' : ''}</div>
+        <div class="row"><span style="flex:1;">2.5. Ведение горных работ (за исключением добычи общераспространенных полезных ископаемых и разработки россыпных месторождений открытым способом без взрывных работ), работ по обогащению полезных ископаемых</span> ${p2.p2_5 ? 'V' : ''}</div>
+        <div class="row"><span style="flex:1;">2.6. Осуществление хранения или переработки растительного сырья, в процессе которых образуются взрывоопасные пылевоздушные смеси, способные самовозгораться, возгораться от источника зажигания и самостоятельно гореть после его удаления, а также хранение зерна, продуктов его переработки и комбикормового сырья, склонных к самосогреванию и самовозгоранию</span> ${p2.p2_6 ? 'V' : ''}</div>
+    </div>
+
+    <!-- РАЗДЕЛ 3 -->
+    <div class="section">
+        <div class="section-title">3. Класс опасности ОПО и его числовое обозначение</div>
+        <div class="inline-group">
+            <span>3.1. ОПО чрезвычайно высокой опасности (I класс) ${classVal === 'I' ? 'V' : ''}</span>
+            <span>3.2. ОПО высокой опасности (II класс) ${classVal === 'II' ? 'V' : ''}</span>
+            <span>3.3. ОПО средней опасности (III класс) ${classVal === 'III' ? 'V' : ''}</span>
+            <span>3.4. ОПО низкой опасности (IV класс) ${classVal === 'IV' ? 'V' : ''}</span>
+        </div>
+    </div>
+
+    <!-- РАЗДЕЛ 4 -->
+    <div class="section">
+        <div class="section-title">4. Классификация ОПО</div>
+        <div class="checklist">
+            ${classifSelected.map(v => `<div>${v}</div>`).join('')}
+            ${subSelected.map(v => `<div>${v}</div>`).join('')}
+        </div>
+        <div class="row"><span style="flex:1;">4.12. ОПО, аварии на котором могут иметь трансграничное воздействие</span> ${transboundary ? 'V' : ''}</div>
+    </div>
+
+    <!-- РАЗДЕЛ 5 -->
+    <div class="section">
+        <div class="section-title">5. Виды деятельности, на осуществление которых требуется получение лицензии для эксплуатации ОПО</div>
+        <div class="checklist">
+            ${licenseSelected.map(v => `<div>${v}</div>`).join('')}
+        </div>
+    </div>
+
+    <!-- РАЗДЕЛ 6 (ТАБЛИЦА) -->
+    <div class="section">
+        <div class="section-title">6. Сведения о составе ОПО</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:5%;">№ п/п</th>
+                    <th style="width:18%;">Наименование предприятия или его цеха, площадки, участка, иного производственного объекта, здания, сооружения, входящих в состав ОПО</th>
+                    <th style="width:20%;">Краткая характеристика опасности (приложение 1 к 116-ФЗ)</th>
+                    <th style="width:20%;">Наименование опасного вещества; регистрационные/учетные номера, марка и т.п.</th>
+                    <th style="width:22%;">Проектные (эксплуатационные) характеристики (включая количество опасного вещества, т)</th>
+                    <th style="width:15%;">Числовое обозначение процессов (2.1–2.6)</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${tableData.map((row, idx) => `
+                    <tr>
+                        <td style="text-align:center;">${idx+1}.</td>
+                        <td>${row.name}</td>
+                        <td>${row.dangerSelected.map(d => dangerItems.find(item => item.id === d)?.label || d).join('; ')}</td>
+                        <td>${row.substance}</td>
+                        <td>${row.projText}<br><strong>Количество, т:</strong> ${row.amount}</td>
+                        <td>${row.processSelected.join('; ')}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        <div style="margin-top:10pt; font-weight:bold;">Суммарное количество опасного вещества по видам (в тоннах) на ОПО: ${totalAmount}</div>
+    </div>
+
+    <!-- РАЗДЕЛ 7 -->
+    <div class="section">
+        <div class="section-title">7. Количество опасных веществ на ОПО (в тоннах), находящихся на расстоянии менее 500 метров на других ОПО заявителя или иной организации по видам в соответствии с таблицами 1 и 2 приложения 2 к 116-ФЗ (при наличии)</div>
+        <div>${f7}</div>
+    </div>
+
+    <!-- РАЗДЕЛ 8 -->
+    <div class="section">
+        <div class="section-title">8. Заявитель</div>
+        <div class="bold">8.1 Юридическое лицо</div>
+        <div class="row"><span class="label">8.1.1 Полное наименование</span><span class="value">${f8.full}</span></div>
+        <div class="row"><span class="label">8.1.2 Сокращенное наименование (при наличии)</span><span class="value">${f8.short}</span></div>
+        <div class="row"><span class="label">8.1.3 ИНН</span><span class="value">${f8.inn}</span></div>
+        <div class="row"><span class="label">8.1.4 ОГРН</span><span class="value">${f8.ogrn}</span></div>
+        <div class="row"><span class="label">8.1.5 Должность руководителя</span><span class="value">${f8.post}</span></div>
+        <div class="row"><span class="label">8.1.6 Фамилия, имя, отчество руководителя</span><span class="value">${f8.fio}</span></div>
+        <div class="row"><span class="label">8.1.7 Адрес места нахождения</span><span class="value">${f8.address}</span></div>
+        <div class="row"><span class="label">8.1.8 Подпись руководителя</span><span class="value">${f8.sign}</span></div>
+        <div class="row"><span class="label">8.1.9 Дата подписания</span><span class="value">${f8.date}</span></div>
+        <div class="row"><span class="label">Место печати (при наличии)</span><span class="value">${f8.mp}</span></div>
+    </div>
+
+    <!-- РАЗДЕЛ 9 -->
+    <div class="section">
+        <div class="section-title">9. Реквизиты ОПО и территориального органа Ростехнадзора</div>
+        <div class="row"><span class="label">9.1. Регистрационный номер</span><span class="value">${f9.regNum}</span></div>
+        <div class="row"><span class="label">9.2. Временный номер (системный)</span><span class="value">${f9.tempNum}</span></div>
+        <div class="row"><span class="label">9.3. Дата регистрации</span><span class="value">${f9.dateReg}</span></div>
+        <div class="row"><span class="label">9.4. Дата внесения изменений</span><span class="value">${f9.dateChange}</span></div>
+        <div class="row"><span class="label">9.5. Полное наименование регистрирующего органа</span><span class="value">${f9.orgName}</span></div>
+        <div class="row"><span class="label">9.6. Должность уполномоченного лица</span><span class="value">${f9.dolj}</span></div>
+        <div class="row"><span class="label">9.7. ФИО уполномоченного лица</span><span class="value">${f9.fio}</span></div>
+        <div class="row"><span class="label">9.8. Подпись уполномоченного лица</span><span class="value">${f9.sign}</span></div>
+        <div class="row"><span class="label">9.10. Дата подписания уполномоченным лицом</span><span class="value">${f9.date}</span></div>
+        <div class="row"><span class="label">Место печати (при наличии)</span><span class="value">${f9.mp}</span></div>
+    </div>
+
+    <!-- Подпись -->
+    <div style="margin-top:20pt; font-style:italic; text-align:right;">Сведения, характеризующие ОПО, достоверны.</div>
+    <div class="signature-block">
+        <div class="signature-left">
+            <div class="field"><span>Должность, ФИО:</span> <span class="value">${signDolj}</span></div>
+            <div class="field"><span>Подпись:</span> <span class="value">${signPodp}</span></div>
+            <div class="field"><span>Дата:</span> <span class="value">${signDate}</span></div>
+        </div>
+        <div class="signature-right">
+            <span>М.П. (при наличии):</span> <span class="value">${signMp}</span>
+        </div>
+    </div>
+
+</body></html>`;
+
+        // Скачиваем
+        const blob = new Blob([html], { type: 'application/msword;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'Сведения_об_ОПО.doc';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    // ================== СБОР ДАННЫХ ДЛЯ СЕРВЕРА ==================
+    function collectFormData() {
+        const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value : '';
+        const getCheck = (id) => document.getElementById(id) ? document.getElementById(id).checked : false;
+
+        // Разделы 2–5 как текст
+        const processes = [];
+        ['p2_1','p2_2a','p2_2b','p2_2c','p2_3','p2_4','p2_5','p2_6'].forEach((id, i) => {
+            if (getCheck(id)) {
+                const labels = ['2.1','2.2а','2.2б','2.2в','2.3','2.4','2.5','2.6'];
+                processes.push(labels[i]);
+            }
+        });
+
+        const classVal = document.querySelector('input[name="class"]:checked');
+        const classLabels = { I: 'I класс (чрезвычайно высокой опасности)', II: 'II класс (высокой опасности)', III: 'III класс (средней опасности)', IV: 'IV класс (низкой опасности)' };
+
+        const classifChecked = [...document.querySelectorAll('#classifList input:checked')].map(el => el.value);
+        const licenseChecked = [...document.querySelectorAll('#licenseList input:checked')].map(el => el.value);
+
+        // Таблица состава
+        const composition = [];
+        document.querySelectorAll('#tableBody tr').forEach((tr, idx) => {
+            const name = tr.querySelector('.table-name') ? tr.querySelector('.table-name').value : '';
+            const substance = tr.querySelector('.table-substance') ? tr.querySelector('.table-substance').value : '';
+            const projText = tr.querySelector('.proj-text') ? tr.querySelector('.proj-text').value : '';
+            const amount = tr.querySelector('.danger-amount-input') ? tr.querySelector('.danger-amount-input').value : '0';
+            const dangerChecked = [...tr.querySelectorAll('.checkbox-group input[type="checkbox"]:checked')]
+                .filter(el => el.value.startsWith('d'))
+                .map(el => {
+                    const item = dangerItems.find(d => d.id === el.value);
+                    return item ? item.label : el.value;
+                });
+            const procChecked = [...tr.querySelectorAll('.checkbox-group input[type="checkbox"]:checked')]
+                .filter(el => el.value.startsWith('2.'))
+                .map(el => el.value);
+            composition.push({
+                number: (idx + 1) + '.',
+                name,
+                danger: dangerChecked.join('; '),
+                substance,
+                characteristics: projText + (amount && amount !== '0' ? '\nКоличество, т: ' + amount : ''),
+                processes: procChecked.join(', ')
+            });
+        });
+
+        return {
+            f1_1: getVal('f1_1'), f1_2: getVal('f1_2'), f1_3: getVal('f1_3'),
+            f1_4: getVal('f1_4'), f1_5: getVal('f1_5'), f1_6: getVal('f1_6'),
+            f1_7_1: getVal('f1_7_1'), f1_7_2: getVal('f1_7_2'),
+            processes_text: processes.join(', '),
+            danger_class: classVal ? classLabels[classVal.value] || classVal.value : '',
+            classification_text: classifChecked.join('; '),
+            licenses_text: licenseChecked.join('; '),
+            composition,
+            totalAmount: getVal('totalAmount'),
+            f7: getVal('f7'),
+            f8_1_1: getVal('f8_1_1'), f8_1_2: getVal('f8_1_2'), f8_1_3: getVal('f8_1_3'),
+            f8_1_4: getVal('f8_1_4'), f8_1_5: getVal('f8_1_5'), f8_1_6: getVal('f8_1_6'),
+            f8_1_7: getVal('f8_1_7'), f8_1_9: getVal('f8_1_9'),
+            f9_1: getVal('f9_1'), f9_2: getVal('f9_2'), f9_3: getVal('f9_3'),
+            f9_4: getVal('f9_4'), f9_5: getVal('f9_5'), f9_6: getVal('f9_6'),
+            f9_7: getVal('f9_7'), f9_10: getVal('f9_10'),
+            signDolj: getVal('sign_dolj'), signDate: getVal('sign_date'), signMp: getVal('sign_mp'),
+        };
+    }
+
+    async function exportServer(format) {
+        const data = collectFormData();
+        const btn = event.target;
+        btn.disabled = true;
+        btn.textContent = 'Формируется...';
+        try {
+            const resp = await fetch(`/export/${format}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (!resp.ok) throw new Error('Ошибка сервера: ' + resp.status);
+            const blob = await resp.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = format === 'pdf' ? 'Сведения_об_ОПО.pdf' : 'Сведения_об_ОПО.docx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            alert('Не удалось получить файл с сервера. Убедитесь, что Flask запущен.\n' + e.message);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = format === 'pdf' ? '📕 Скачать PDF' : '📄 Скачать DOCX';
+        }
+    }
+
+    // Инициализация
+    window.onload = function() {
+        initTable();
+    };
+</script>
+</body>
+</html>
